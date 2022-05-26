@@ -3,22 +3,18 @@
 import requests
 from bs4 import BeautifulSoup
 
-class pageParse:
-    """Take the HTML from a website."""
+class PageParse:
+    """Take the HTML from a website and scrape the article contents"""
     def __init__(self,url) -> None:
         self.url = url
-
-    def getText(self):
-        page = requests.get(self.url)
-        return page.content
-
-class textScrape:
-    """Select the main article content from the whole html"""
-    def __init__(self,content) -> None:
-        self.content = content
+        self.content = None
         self.article_texts_list = []
         self.raw_article = []
         self.article_texts = ""
+        
+    def getText(self):
+        page = requests.get(self.url)
+        self.content = page.content
 
     def BBC_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
@@ -41,8 +37,10 @@ class textScrape:
         self.article_texts = " ".join(self.article_texts_list)
 
 
-bbc = pageParse("https://www.cnn.com/2022/05/26/politics/senate-domestic-terrorism-bill-vote/index.html")
+bbc = PageParse("https://www.cnn.com/2022/05/26/politics/senate-domestic-terrorism-bill-vote/index.html")
 
-bbc_content = textScrape(bbc.getText())
+bbc_content = TextScrape(bbc.getText())
 bbc_content.CNN_filter()
 print(bbc_content.restructure())
+
+
