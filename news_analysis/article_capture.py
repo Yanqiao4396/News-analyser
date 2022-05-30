@@ -3,14 +3,17 @@
 from lib2to3.pgen2 import driver
 import requests
 from bs4 import BeautifulSoup
-from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome, ChromeOptions
 
 class ArticleSearch:
     """Search articles in the news media according to the query"""
     def __init__(self, search_word:str) -> None:
         self.search_word = search_word
+        # Make browser doesn't show up
+        self.options = ChromeOptions()
+        self.options.headless = True
         self.response = None
-        self.driver = Chrome(executable_path='./drivers/chromedriver')
+        self.driver = Chrome(executable_path='./drivers/chromedriver',options=self.options)
 
     def NBC_search(self):
         #Convert into the forms of query as a part of url
@@ -22,6 +25,19 @@ class ArticleSearch:
         #Avoid repeat contents
         filtered_links = set(ele for ele in links if ele is not None)
         return filtered_links
+
+    def CNN_search(self):
+        #Convert into the forms of query as a part of url
+        self.search_word = self.search_word.replace(" ", "%20")
+        self.driver.get(f"https://www.cnn.com/search?q={self.search_word}&size=10&sort=relevance")
+        elements = self.driver.find_elements_by_class_name("cnn-search__result-headline")
+        self.driver.quit
+        elements = map(lambda x:x.find_element_by_css_selector("*"),elements)
+        links = map(lambda x:x.get_attribute("href"),elements)
+        #Avoid repeat contents
+        filtered_links = set(ele for ele in links if ele is not None)
+        return filtered_links
+
 
 class PageParse:
     """Take the HTML from a website and scrape the article contents"""
