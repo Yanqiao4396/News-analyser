@@ -1,14 +1,13 @@
 """Capture relative news text from websites"""
 
-from lib2to3.pgen2 import driver
 import requests
 from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome, ChromeOptions
 
 class ArticleSearch:
-    """Search articles in the news media according to the query"""
+    """Search and grab the links of articles in the news media according to the query"""
     def __init__(self, search_words:str) -> None:
-        self.search_word = search_words
+        self.search_words = search_words
         # Make browser doesn't show up
         self.options = ChromeOptions()
         self.options.headless = True
@@ -17,10 +16,11 @@ class ArticleSearch:
 
     def NBC_search(self):
         #Convert into the forms of query as a part of url
-        self.search_word = self.search_word.replace(" ", "+")
-        self.driver.get(f"https://www.nbcnews.com/search/?q={self.search_word}")
+        self.search_words = self.search_words.replace(" ", "+")
+        self.driver.get(f"https://www.nbcnews.com/search/?q={self.search_words}")
         elements = self.driver.find_elements_by_class_name("gs-title")
         self.driver.quit
+        # Grab links in the attributes
         links = map(lambda x:x.get_attribute("href"),elements)
         #Avoid repeat_links
         filtered_links = set(ele for ele in links if ele is not None)
@@ -29,8 +29,8 @@ class ArticleSearch:
 
     def CNN_search(self):
         #Convert into thE forms of query as a part of url
-        self.search_word = self.search_word.replace(" ", "%20")
-        self.driver.get(f"https://www.cnn.com/search?q={self.search_word}&size=10&sort=relevance")
+        self.search_words = self.search_words.replace(" ", "%20")
+        self.driver.get(f"https://www.cnn.com/search?q={self.search_words}&size=10&sort=relevance")
         elements = self.driver.find_elements_by_class_name("cnn-search__result-headline")
         self.driver.quit
         #Target the children
@@ -71,6 +71,8 @@ class PageParse:
         self.article_texts = " ".join(self.article_texts_list)
         return self.article_texts
 
+
+
 class ArticleCaptureController:
     """Do the article capture with the search words and output the articles"""
     def __init__(self, search_words) -> None:
@@ -85,6 +87,7 @@ class ArticleCaptureController:
             article.NBC_filter()
             polished_article = article.restructure()
             self.corpus.append(polished_article)
+            
     def CNN_caller(self):
         article_links = self.articles_search.CNN_search()
         for link in article_links:
