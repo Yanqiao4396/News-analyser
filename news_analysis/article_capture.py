@@ -10,7 +10,7 @@ class ArticleSearch:
         self.search_words = search_words
         # Make browser doesn't show up
         self.options = ChromeOptions()
-        self.options.headless = True
+        self.options.headless = False
         self.response = None
         self.driver = Chrome(executable_path='./drivers/chromedriver',options=self.options)
 
@@ -40,6 +40,19 @@ class ArticleSearch:
         filtered_links = set(ele for ele in links if ele is not None)
         return filtered_links
 
+    def Reuters_search(self):
+        #Convert into the forms of query as a part of url
+
+        self.search_words = self.search_words.replace(" ", "+")
+        #https://www.reuters.com/site-search/?query={}&sort=relevance&offset=0
+        self.driver.get(f"https://www.reuters.com/site-search/?query={self.search_words}&sort=relevance&offset=0")
+        elements = self.driver.find_elements_by_css_selector("[data-testid=Heading]")
+        self.driver.quit
+        # Grab links in the attributes
+        links = map(lambda x:x.get_attribute("href"),elements)
+        #Avoid repeat_links
+        filtered_links = set(ele for ele in links if ele is not None)
+        return filtered_links
 
 class PageParse:
     """Take the HTML from a website and scrape the article contents"""
@@ -64,6 +77,9 @@ class PageParse:
         # Get raw contents with tags and attributes based on the specific attribute
         self.raw_article = bs.find_all("div", class_="pg-rail-tall__body")
 
+    def Reuters_filter(self):
+        bs = BeautifulSoup(self.content, "html.parser")
+        self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")
 
     def restructure(self):
         # Strip the tags and attributes
@@ -97,9 +113,19 @@ class ArticleCaptureController:
             polished_article = article.restructure()
             self.corpus.append(polished_article)
     
+    def Reuters_caller(self):
+        article_links = self.articles_search.Reuters_search()
+        for link in article_links:
+            article = PageParse(link)
+            article.getText()
+            article.Reuters_filter()
+            polished_article = article.restructure()
+            self.corpus.append(polished_article)        
+
     def get_corpus(self):
-        self.NBC_caller()
-        self.CNN_caller()
+        # self.NBC_caller()
+        # self.CNN_caller()
+        self.Reuters_caller()
         return self.corpus
 
 if __name__ == "__main__":
