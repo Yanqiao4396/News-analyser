@@ -42,11 +42,21 @@ class ArticleSearch:
 
     def Reuters_search(self):
         #Convert into the forms of query as a part of url
-
         self.search_words = self.search_words.replace(" ", "+")
-        #https://www.reuters.com/site-search/?query={}&sort=relevance&offset=0
         self.driver.get(f"https://www.reuters.com/site-search/?query={self.search_words}&sort=relevance&offset=0")
         elements = self.driver.find_elements_by_css_selector("[data-testid=Heading]")
+        self.driver.quit
+        # Grab links in the attributes
+        links = map(lambda x:x.get_attribute("href"),elements)
+        #Avoid repeat_links
+        filtered_links = set(ele for ele in links if ele is not None)
+        return filtered_links
+
+    def Atlantic_search(self):
+        #Convert into the forms of query as a part of url
+        self.search_words = self.search_words.replace(" ", "+")
+        self.driver.get(f"https://www.theatlantic.com/search/?q={self.search_words}")
+        elements = self.driver.find_elements_by_class_name("gs-title")
         self.driver.quit
         # Grab links in the attributes
         links = map(lambda x:x.get_attribute("href"),elements)
@@ -75,11 +85,16 @@ class PageParse:
     def CNN_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
         # Get raw contents with tags and attributes based on the specific attribute
-        self.raw_article = bs.find_all("div", class_="pg-rail-tall__body")
+        self.raw_article = bs.find_all("div", class_="zn-body__paragraph")
 
     def Reuters_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
-        self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")
+        self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")[:10]
+
+    def Atlantic_filter(self):
+        bs = BeautifulSoup(self.content, "html.parser")
+        # Get raw contents with tags and attributes based on the specific attribute
+        self.raw_article = bs.find_all("p", class_="ArticleParagraph_root__wy3UI")
 
     def restructure(self):
         # Strip the tags and attributes
@@ -91,10 +106,10 @@ class PageParse:
 
 class ArticleCaptureController:
     """Do the article capture with the search words and output the articles"""
-    def __init__(self, search_words) -> None:
+    def __init__(self, search_words, search_media = None) -> None:
         self.articles_search = ArticleSearch(search_words)
         self.corpus = []
-
+        self.search_media = search_media
     def NBC_caller(self):
         article_links = self.articles_search.NBC_search()
         for link in article_links:
@@ -113,21 +128,35 @@ class ArticleCaptureController:
             polished_article = article.restructure()
             self.corpus.append(polished_article)
     
-    def Reuters_caller(self):
-        article_links = self.articles_search.Reuters_search()
-        for link in article_links:
-            article = PageParse(link)
+    def Reuters_caller(self):zn-body__paragraph
             article.getText()
             article.Reuters_filter()
             polished_article = article.restructure()
             self.corpus.append(polished_article)        
 
+    def Atlantic_caller(self):
+        article_links = self.articles_search.Atlantic_search()
+        for link in article_links:
+            article = PageParse(link)
+            article.getText()
+            article.Atlantic_filter()
+            polished_article = article.restructure()
+            self.corpus.append(polished_article)              
+
     def get_corpus(self):
-        # self.NBC_caller()
-        # self.CNN_caller()
+        if self.search_media != None:
+            exec(f"self.{self.search_media}_caller()")
+
+            while ('' in self.corpus):
+                print(True)
+                self.corpus.remove('')
+            return self.corpus
+
+        self.NBC_caller()
+        self.CNN_caller()
         self.Reuters_caller()
         return self.corpus
 
 if __name__ == "__main__":
-    a = ArticleCaptureController("China covid")
+    a = ArticleCaptureController("shanghai covid","CNN")
     print(len(a.get_corpus()))
