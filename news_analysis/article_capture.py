@@ -10,7 +10,7 @@ class ArticleSearch:
         self.search_words = search_words
         # Make browser doesn't show up
         self.options = ChromeOptions()
-        self.options.headless = False
+        self.options.headless = True
         self.response = None
         self.driver = Chrome(executable_path='./drivers/chromedriver',options=self.options)
 
@@ -30,7 +30,7 @@ class ArticleSearch:
     def CNN_search(self):
         #Convert into thE forms of query as a part of url
         self.search_words = self.search_words.replace(" ", "%20")
-        self.driver.get(f"https://www.cnn.com/search?q={self.search_words}&size=10&sort=relevance")
+        self.driver.get(f"https://www.cnn.com/search?q={self.search_words}&size=10&sort=relevance&types=article")
         elements = self.driver.find_elements_by_class_name("cnn-search__result-headline")
         self.driver.quit
         #Target the children
@@ -52,11 +52,12 @@ class ArticleSearch:
         filtered_links = set(ele for ele in links if ele is not None)
         return filtered_links
 
-    def Atlantic_search(self):
+    def WP_search(self):
         #Convert into the forms of query as a part of url
         self.search_words = self.search_words.replace(" ", "+")
-        self.driver.get(f"https://www.theatlantic.com/search/?q={self.search_words}")
-        elements = self.driver.find_elements_by_class_name("gs-title")
+        self.driver.get(f"https://www.washingtonpost.com/search/?query={self.search_words}&btn-search=&facets=%7B%22time%22%3A%22all%22%2C%22sort%22%3A%22relevancy%22%2C%22section%22%3A%5B%5D%2C%22author%22%3A%5B%5D%7D")
+        elements = self.driver.find_elements_by_class_name("single-result mt-sm pb-sm")
+        print(elements)
         self.driver.quit
         # Grab links in the attributes
         links = map(lambda x:x.get_attribute("href"),elements)
@@ -80,29 +81,29 @@ class PageParse:
     def NBC_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
         # Get raw contents with tags and attributes based on the specific attribute
-        self.raw_article = bs.find_all("div", class_ = "article-body__content")
+        self.raw_article = bs.find_all("div")
 
     def CNN_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
         # Get raw contents with tags and attributes based on the specific attribute
-        self.raw_article = bs.find_all("div", class_="zn-body__paragraph")
+        self.raw_article = bs.find_all("div", class_="Paragraph__component")
+        self.raw_article.extend(bs.find_all("p"))
 
     def Reuters_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
         self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")[:10]
 
-    def Atlantic_filter(self):
+    def WP_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
         # Get raw contents with tags and attributes based on the specific attribute
-        self.raw_article = bs.find_all("p", class_="ArticleParagraph_root__wy3UI")
+        self.raw_article = bs.find_all("div", class_="article-body")
 
     def restructure(self):
         # Strip the tags and attributes
         self.article_texts_list = list(map(lambda x: x.text,self.raw_article))
         self.article_texts = " ".join(self.article_texts_list)
+        self.article_texts = self.article_texts.replace("\n","")
         return self.article_texts
-
-
 
 class ArticleCaptureController:
     """Do the article capture with the search words and output the articles"""
@@ -128,18 +129,21 @@ class ArticleCaptureController:
             polished_article = article.restructure()
             self.corpus.append(polished_article)
     
-    def Reuters_caller(self):zn-body__paragraph
+    def Reuters_caller(self):
+        article_links = self.articles_search.Reuters_search()
+        for link in article_links:
+            article = PageParse(link)
             article.getText()
             article.Reuters_filter()
             polished_article = article.restructure()
             self.corpus.append(polished_article)        
 
-    def Atlantic_caller(self):
-        article_links = self.articles_search.Atlantic_search()
+    def WP_caller(self):
+        article_links = self.articles_search.WP_search()
         for link in article_links:
             article = PageParse(link)
             article.getText()
-            article.Atlantic_filter()
+            article.WP_filter()
             polished_article = article.restructure()
             self.corpus.append(polished_article)              
 
@@ -148,7 +152,6 @@ class ArticleCaptureController:
             exec(f"self.{self.search_media}_caller()")
 
             while ('' in self.corpus):
-                print(True)
                 self.corpus.remove('')
             return self.corpus
 
@@ -158,5 +161,5 @@ class ArticleCaptureController:
         return self.corpus
 
 if __name__ == "__main__":
-    a = ArticleCaptureController("shanghai covid","CNN")
+    a = ArticleCaptureController("china covid","CNN")
     print(len(a.get_corpus()))
