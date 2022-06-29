@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome, ChromeOptions
 
 class ArticleSearch:
-    """Search and grab the links of articles in the news media according to the query"""
+    """Search in the news websites and grab the links of articles in the news media according to the query"""
     def __init__(self, search_words:str) -> None:
         self.search_words = search_words
         # Make browser doesn't show up
@@ -66,7 +66,7 @@ class ArticleSearch:
         return filtered_links
 
 class PageParse:
-    """Take the HTML from a website and scrape the article contents"""
+    """Scrape the HTML elements from websites and convert them into readable texts"""
     def __init__(self,url) -> None:
         self.url = url
         self.content = ""
@@ -106,7 +106,7 @@ class PageParse:
         return self.article_texts
 
 class ArticleCaptureController:
-    """Do the article capture with the search words and output the articles"""
+    """Do the article capture with the search words and output a corpus"""
     def __init__(self, search_words, search_media = None) -> None:
         self.articles_search = ArticleSearch(search_words)
         self.corpus = []
@@ -148,16 +148,22 @@ class ArticleCaptureController:
             self.corpus.append(polished_article)              
 
     def get_corpus(self):
+        "The main method to return corpus"
+        # If user targets specific media, then just call the targeted one
         if self.search_media != None:
             exec(f"self.{self.search_media}_caller()")
-
+        # the articles aren't promised to scraped because of the variety of styles of HTML
+        # So for the articles which are failed to scrape, delete the null string to clean the outcome
             while ('' in self.corpus):
                 self.corpus.remove('')
             return self.corpus
 
+        # Scrape from all the three media. It's a default option
         self.NBC_caller()
         self.CNN_caller()
         self.Reuters_caller()
+        while ('' in self.corpus):
+            self.corpus.remove('')
         return self.corpus
 
 if __name__ == "__main__":
