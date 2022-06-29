@@ -1,9 +1,9 @@
-"""Create a sheet of summary of analysis"""
+"""Create a sheet of summary of Tf-idf analysis"""
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-def words_graph(words_list=None):
-
+def words_graph(words_list):
+    """Generate a wordcloud to visualize the top features of Tf-idf"""
     # Create a list of word
     text=" ".join(words_list)
     # Create the wordcloud object
@@ -14,6 +14,3 @@ def words_graph(words_list=None):
     plt.axis("off")
     plt.margins(x=0, y=0)
     plt.show()
-
-if __name__ == "__main__":
-    words_graph()
