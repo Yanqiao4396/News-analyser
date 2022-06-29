@@ -17,6 +17,7 @@ class ArticleSearch:
     def NBC_search(self):
         #Convert into the forms of query as a part of url
         self.search_words = self.search_words.replace(" ", "+")
+        # Enter the website
         self.driver.get(f"https://www.nbcnews.com/search/?q={self.search_words}")
         elements = self.driver.find_elements_by_class_name("gs-title")
         self.driver.quit
@@ -30,6 +31,7 @@ class ArticleSearch:
     def CNN_search(self):
         #Convert into thE forms of query as a part of url
         self.search_words = self.search_words.replace(" ", "%20")
+        # Enter website
         self.driver.get(f"https://www.cnn.com/search?q={self.search_words}&size=10&sort=relevance&types=article")
         elements = self.driver.find_elements_by_class_name("cnn-search__result-headline")
         self.driver.quit
@@ -43,21 +45,9 @@ class ArticleSearch:
     def Reuters_search(self):
         #Convert into the forms of query as a part of url
         self.search_words = self.search_words.replace(" ", "+")
+        # Enter website
         self.driver.get(f"https://www.reuters.com/site-search/?query={self.search_words}&sort=relevance&offset=0")
         elements = self.driver.find_elements_by_css_selector("[data-testid=Heading]")
-        self.driver.quit
-        # Grab links in the attributes
-        links = map(lambda x:x.get_attribute("href"),elements)
-        #Avoid repeat_links
-        filtered_links = set(ele for ele in links if ele is not None)
-        return filtered_links
-
-    def WP_search(self):
-        #Convert into the forms of query as a part of url
-        self.search_words = self.search_words.replace(" ", "+")
-        self.driver.get(f"https://www.washingtonpost.com/search/?query={self.search_words}&btn-search=&facets=%7B%22time%22%3A%22all%22%2C%22sort%22%3A%22relevancy%22%2C%22section%22%3A%5B%5D%2C%22author%22%3A%5B%5D%7D")
-        elements = self.driver.find_elements_by_class_name("single-result mt-sm pb-sm")
-        print(elements)
         self.driver.quit
         # Grab links in the attributes
         links = map(lambda x:x.get_attribute("href"),elements)
@@ -75,6 +65,7 @@ class PageParse:
         self.article_texts = ""
         
     def getText(self):
+        """Grab HTML contents from URL websites"""
         page = requests.get(self.url)
         self.content = page.content
 
@@ -93,11 +84,6 @@ class PageParse:
         bs = BeautifulSoup(self.content, "html.parser")
         self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")[:10]
 
-    def WP_filter(self):
-        bs = BeautifulSoup(self.content, "html.parser")
-        # Get raw contents with tags and attributes based on the specific attribute
-        self.raw_article = bs.find_all("div", class_="article-body")
-
     def restructure(self):
         # Strip the tags and attributes
         self.article_texts_list = list(map(lambda x: x.text,self.raw_article))
@@ -111,7 +97,9 @@ class ArticleCaptureController:
         self.articles_search = ArticleSearch(search_words)
         self.corpus = []
         self.search_media = search_media
+
     def NBC_caller(self):
+        """An unique method to just grab contents from NBC"""
         article_links = self.articles_search.NBC_search()
         for link in article_links:
             article = PageParse(link)
@@ -121,6 +109,7 @@ class ArticleCaptureController:
             self.corpus.append(polished_article)
             
     def CNN_caller(self):
+        """An unique method to just grab contents from CNN"""
         article_links = self.articles_search.CNN_search()
         for link in article_links:
             article = PageParse(link)
@@ -130,6 +119,7 @@ class ArticleCaptureController:
             self.corpus.append(polished_article)
     
     def Reuters_caller(self):
+        """An unique method to just grab contents from Reuters"""
         article_links = self.articles_search.Reuters_search()
         for link in article_links:
             article = PageParse(link)
