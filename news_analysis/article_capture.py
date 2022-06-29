@@ -136,16 +136,7 @@ class ArticleCaptureController:
             article.getText()
             article.Reuters_filter()
             polished_article = article.restructure()
-            self.corpus.append(polished_article)        
-
-    def WP_caller(self):
-        article_links = self.articles_search.WP_search()
-        for link in article_links:
-            article = PageParse(link)
-            article.getText()
-            article.WP_filter()
-            polished_article = article.restructure()
-            self.corpus.append(polished_article)              
+            self.corpus.append(polished_article)         
 
     def get_corpus(self):
         "The main method to return corpus"
