@@ -4,12 +4,6 @@ import matplotlib.pyplot as plt
 
 def words_graph(words_list=None):
 
-    words_list = ['app', 'authorities', 'breaking', 'cases', 'china', 'chinese', 'city'
-    'coronavirus', 'covid', 'days', 'food', 'government', 'lockdown', 'march'
-    'media', 'millions', 'officials', 'online', 'outbreak', 'policy', 'politics'
-    'quarantine', 'reported', 'residents', 'restrictions', 'shanghai', 'testing'
-    'time', 'virus', 'zerocovid']
-
     # Create a list of word
     text=" ".join(words_list)
     # Create the wordcloud object
