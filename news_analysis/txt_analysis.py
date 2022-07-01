@@ -17,6 +17,7 @@ from gensim.models import LdaModel
 
 import pyLDAvis 
 import pyLDAvis.gensim_models
+import os
 
 class CorpusPreprocess:
     """Remove punctuations and words which express no meanings like 'is', 'a',
@@ -26,7 +27,7 @@ class CorpusPreprocess:
         self.corpus = corpus
 
     def punctuations_and_stop_words_remove(self):
-        with open("./data/stop_words.txt") as f:
+        with open(f".{os.path.sep}data{os.path.sep}stop_words.txt") as f:
             stop_words = f.read()
             # Get a list of stop words
             stop_words = stop_words.split(", ")
