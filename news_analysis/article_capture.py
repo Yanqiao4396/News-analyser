@@ -12,11 +12,11 @@ class ArticleSearch:
         self.options = ChromeOptions()
         self.options.headless = True
         self.response = None
-        self.driver = Chrome(executable_path='./drivers/chromedriver',options=self.options)
+        self.driver = Chrome(executable_path='../drivers/chromedriver',options=self.options)
 
     def NBC_search(self):
         #Convert into the forms of query as a part of url
-        self.search_words = self.search_words.replace(" ", "+")
+        self.search_words = self.search_words.replace("_", "+")
         # Enter the website
         self.driver.get(f"https://www.nbcnews.com/search/?q={self.search_words}")
         elements = self.driver.find_elements_by_class_name("gs-title")
@@ -30,7 +30,7 @@ class ArticleSearch:
 
     def CNN_search(self):
         #Convert into thE forms of query as a part of url
-        self.search_words = self.search_words.replace(" ", "%20")
+        self.search_words = self.search_words.replace("_", "%20")
         # Enter website
         self.driver.get(f"https://www.cnn.com/search?q={self.search_words}&size=10&sort=relevance&types=article")
         elements = self.driver.find_elements_by_class_name("cnn-search__result-headline")
@@ -44,7 +44,7 @@ class ArticleSearch:
 
     def Reuters_search(self):
         #Convert into the forms of query as a part of url
-        self.search_words = self.search_words.replace(" ", "+")
+        self.search_words = self.search_words.replace("_", "+")
         # Enter website
         self.driver.get(f"https://www.reuters.com/site-search/?query={self.search_words}&sort=relevance&offset=0")
         elements = self.driver.find_elements_by_css_selector("[data-testid=Heading]")
@@ -54,6 +54,7 @@ class ArticleSearch:
         #Avoid repeat_links
         filtered_links = set(ele for ele in links if ele is not None)
         return filtered_links
+
 
 class PageParse:
     """Scrape the HTML elements from websites and convert them into readable texts"""
@@ -90,6 +91,7 @@ class PageParse:
         self.article_texts = " ".join(self.article_texts_list)
         self.article_texts = self.article_texts.replace("\n","")
         return self.article_texts
+
 
 class ArticleCaptureController:
     """Do the article capture with the search words and output a corpus"""
@@ -148,5 +150,5 @@ class ArticleCaptureController:
         return self.corpus
 
 if __name__ == "__main__":
-    a = ArticleCaptureController("china covid","CNN")
+    a = ArticleCaptureController("china covid")
     print(len(a.get_corpus()))

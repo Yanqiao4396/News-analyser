@@ -26,7 +26,7 @@ class CorpusPreprocess:
         self.corpus = corpus
 
     def punctuations_and_stop_words_remove(self):
-        with open("news_analysis/data/stop_words.txt") as f:
+        with open("./data/stop_words.txt") as f:
             stop_words = f.read()
             # Get a list of stop words
             stop_words = stop_words.split(", ")
@@ -62,6 +62,7 @@ class CorpusPreprocess:
         self.punctuations_and_stop_words_remove()
         self.stem_words()
         return self.corpus
+
 
 class TopicModel:
     def __init__(self, input_corpus) -> None:
@@ -103,7 +104,9 @@ class TopicModel:
         vis = pyLDAvis.gensim_models.prepare(lda_model, corpus, dictionary.id2token, mds = "mmds", R = 10)
         vis
 
+
 class TfidfAnalysis:
+    """Analyze term-frequency and inverse document frequency to get the top features which can represent this topic"""
     def __init__(self,cleaned_corpus) -> None:
         self.cleaned_corpus = cleaned_corpus
 
@@ -129,8 +132,7 @@ class TfidfAnalysis:
 
 
 class SentimentAnalyzer:
-    """Because of the attribute of Vader analyzer that the lexicon it uses deals with the raw words but not the base word
-    The preprocessed corpus won't be used here"""
+    """Provide the sentiment analysis to check the topic is positive or negative """
     def __init__(self,corpus) -> None:
         nltk.download(["vader_lexicon"])
         self.corpus = corpus
@@ -140,6 +142,7 @@ class SentimentAnalyzer:
 
 
 class SummaryController:
+    """Call other classes to execute them and generate summary"""
     def __init__(self, corpus) -> None:
         self.corpus = corpus
 
@@ -148,7 +151,8 @@ class SummaryController:
         features = Tfidf_summary.get_keywords()
         sentiment_summary = SentimentAnalyzer(self.corpus[0])
         return features, sentiment_summary.get_sentiment()
-        
+
+
 
 if __name__ == "__main__":
     a = article_capture.ArticleCaptureController("Ukraine","Reuters")
