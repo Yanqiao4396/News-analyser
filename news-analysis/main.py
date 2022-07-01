@@ -1,1 +1,0 @@
-"""Implement the news analysis tool"""

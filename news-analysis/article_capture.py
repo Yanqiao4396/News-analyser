@@ -1,1 +1,0 @@
-"""Capture relative news text from websites"""
