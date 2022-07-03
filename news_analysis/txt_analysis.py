@@ -17,6 +17,7 @@ from gensim.models import LdaModel
 
 import pyLDAvis 
 import pyLDAvis.gensim_models
+import os
 
 class CorpusPreprocess:
     """Remove punctuations and words which express no meanings like 'is', 'a',
@@ -26,7 +27,7 @@ class CorpusPreprocess:
         self.corpus = corpus
 
     def punctuations_and_stop_words_remove(self):
-        with open("./data/stop_words.txt") as f:
+        with open(f".{os.path.sep}data{os.path.sep}stop_words.txt") as f:
             stop_words = f.read()
             # Get a list of stop words
             stop_words = stop_words.split(", ")
@@ -58,7 +59,7 @@ class CorpusPreprocess:
     #         a[corpus_idx] = " ".join(words)
     #     print(a)
 
-    def process_corpus(self):
+    def preprocess_corpus(self):
         self.punctuations_and_stop_words_remove()
         self.stem_words()
         return self.corpus
@@ -109,8 +110,6 @@ class TfidfAnalysis:
     """Analyze term-frequency and inverse document frequency to get the top features which can represent this topic"""
     def __init__(self,cleaned_corpus) -> None:
         self.cleaned_corpus = cleaned_corpus
-
-
     def analyze(self):
         vectorizer = TfidfVectorizer(
             lowercase= True,
@@ -139,7 +138,6 @@ class SentimentAnalyzer:
     def get_sentiment(self):
         analyzer = SentimentIntensityAnalyzer()
         return analyzer.polarity_scores(self.corpus)
-
 
 class SummaryController:
     """Call other classes to execute them and generate summary"""

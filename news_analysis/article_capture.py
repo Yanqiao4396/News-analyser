@@ -3,6 +3,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome, ChromeOptions
+import os
 
 class ArticleSearch:
     """Search in the news websites and grab the links of articles in the news media according to the query"""
@@ -12,7 +13,7 @@ class ArticleSearch:
         self.options = ChromeOptions()
         self.options.headless = True
         self.response = None
-        self.driver = Chrome(executable_path='../drivers/chromedriver',options=self.options)
+        self.driver = Chrome(executable_path=f'..{os.path.sep}drivers{os.path.sep}chromedriver',options=self.options)
 
     def NBC_search(self):
         #Convert into the forms of query as a part of url

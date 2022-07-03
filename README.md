@@ -4,16 +4,18 @@ News Analysis is a tool for providing brief insight into one news topic. It aims
 
 ## Installation
 
-Installing News Analysis tool requires a version of Python greater than 3.8. Because it's a personal project still in development and only accessible to a small number of people, it's not uploaded to `PyPI`. Therefore, the only way to use this project is by cloning it and executing `poetry install` command to add necessary packages. Most importantly, the `Chrome` browser is required to call the' Selenium' package successfully.
+Installing News Analysis tool requires a version of Python greater than 3.8. Because it's a personal project still in development and is only accessible to a small number of people, it's not uploaded to `PyPI`. Therefore, the only way to use this project is by cloning it in github and executing `poetry install` command to add necessary packages. Most importantly, the `Chrome` browser is required to call the' Selenium' package successfully.
 
 ## Usage of News Analysis
+
+A ChromeDriver greater than 102 is required. Please download the current version of ChromeDriver in [this website](https://chromedriver.chromium.org/downloads) based on your OS system and Chrome version. You can check the Chrome version in the `settings` of Chrome. Please extract your ChromeDriver to the directory named `drivers` in the root directory.
 
 To use this tool, run the `poetry install` in the root directory to create a virtual environment and then execute `cd news_analysis` to the correct running path. Finally, run `poetry run python main.py SEARCH_WORDS` Within `SEARCH_WORDS` are the topics you want to explore and it should be in the Snake case if there are is than one word
 
 Also if you have the prefer media, you can specify it by adding `--search-media MEDIA` following the previous command.
 Until now, this tool accepts three media **CNN**, **NBC** and **Reuters**. Please feel free to select any of them with the right name and case.
 
-An exmample below
+An example below
 
 ```bash
 yanqiao@a:~/News_analysis/news_analysis$ poetry run python3 main.py covid_China  --search-media CNN
