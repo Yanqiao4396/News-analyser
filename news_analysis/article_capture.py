@@ -51,7 +51,8 @@ class ArticleSearch:
         elements = self.driver.find_elements_by_css_selector("[data-testid=Heading]")
         self.driver.quit
         # Grab links in the attributes
-        links = map(lambda x:x.get_attribute("href"),elements)
+        # Only select the first 10 links
+        links = list(map(lambda x:x.get_attribute("href"),elements))
         #Avoid repeat_links
         filtered_links = set(ele for ele in links if ele is not None)
         return filtered_links
@@ -84,7 +85,7 @@ class PageParse:
 
     def Reuters_filter(self):
         bs = BeautifulSoup(self.content, "html.parser")
-        self.raw_article = bs.find_all("div", class_="article-body__content__17Yit paywall-article")[:10]
+        self.raw_article = bs.find_all("p", class_="text__text__1FZLe text__dark-grey__3Ml43 text__regular__2N1Xr text__large__nEccO body__base__22dCE body__large_body__FV5_X article-body__element__2p5pI")[:-1]
 
     def restructure(self):
         # Strip the tags and attributes
@@ -151,5 +152,5 @@ class ArticleCaptureController:
         return self.corpus
 
 if __name__ == "__main__":
-    a = ArticleCaptureController("china covid")
+    a = ArticleCaptureController("china covid","Reuters")
     print(len(a.get_corpus()))
