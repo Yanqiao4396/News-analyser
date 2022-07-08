@@ -41,3 +41,14 @@ As well as a wordcloud which represents the top features.
   - overcome the instability from the usage of `Selenium`
   - add more news media to explore more widely
   - add tests
+
+## The Personal Summary of This Project
+
+News Analysis is my first personal medium-size project. Compared with other cool projects online, it may be tiny and simple, but I still feel it's a good start to my journey as a CS worker. Unlike the ones I was required to make as the final projects for the courses, News Analysis is a project strictly coded by myself.  
+In the very beginning, the initial idea emerged when I read the news during the pandemic. I found it tedious to read the lengthy articles in English as a person whose first language is not it. I got lost quickly. Then an idea came to my mind why don't I create a tool to extract the keywords so that people can avoid reading lengthy articles or at least read them more easily with keywords in mind.  
+Then I signed up for the Cupper Scholarship in the cs department of Allegheny College. After updating and fixing my proposal for more than 5 times in 2 months. I finally got admitted and received the opportunity to transform my idea into a concrete project.  
+Things aren't as smooth as I thought. Continuous 8-hour work was far from easy, and the codes always crashed in weird ways. Then sadly, after about 2 weeks, I decided to break for about 10 days because of the headache occurring when I stared at the screen.  
+Despite that, life isn't always around frustrations. Challenge makes people stronger. After reading a variety of blogs, articles and watching youtube videos, I did overcome the challenges step by step. I do remember one of the biggest ones is about searching articles. By imitating the search in the news platform, I decided to work with BeautifulSoup and try to get into the URL with the appropriate query and then extract the links in the HTML.
+Nevertheless, a blank HTML was returned by it. I am so confused, especially when I could get the correct page and content with the same URL in the Chrome browser. After struggling for hours, I eventually discovered the page was dynamic and written by JavaScript recursively and therefore has no static HTML in a blog. Then a new library called Selenium showed up before me and solved the problem smoothly.  
+I do know there are a bunch of defects in News Analysis. The time consumption is high. The test is not done and more and more. But still, I feel comfortable about it. Come on, it's my first project and I did try my best, so no matter what, it does work as expected. So why don't I take it as a tiny achievement in my whole CS career? Wish I could create more cool projects in the future.  
+Finally, thanks to all the people supporting me during this project and the developers contributing to the excellent open-source libraries. Special thanks to Professor Gregory M. Kapfhammer (my advisor) and Mrs. Sandy Cupper (my sponsor)
